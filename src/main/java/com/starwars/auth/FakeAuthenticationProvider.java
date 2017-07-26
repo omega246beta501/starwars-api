@@ -8,45 +8,38 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.ArrayList;
 
 @Service
-public class FakeAuthenticationProvider implements AuthenticationProvider{
-  private AccountRepository accountRepository;
+public class FakeAuthenticationProvider implements AuthenticationProvider {
 
-  @Autowired
-  public FakeAuthenticationProvider(AccountRepository accountRepository) {
-    this.accountRepository = accountRepository;
-  }
+    private AccountRepository accountRepository;
 
-  @Override
-  public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-    String name = authentication.getName();
-    Account account = accountRepository.findByUsername(name);
-
-    if (account == null || !authentication.getCredentials().equals(account.getPassword())) {
-      throw new BadCredentialsException("User not exists or incorrect password");
+    @Autowired
+    public FakeAuthenticationProvider(AccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
     }
 
-    return new UsernamePasswordAuthenticationToken(name, account.getPassword(), getGrantedAuthorities(name));
-  }
+    @Override
+    public Authentication authenticate(Authentication authentication) throws AuthenticationException {
+        String name = authentication.getName();
+        Account account = accountRepository.findByUsername(name);
 
-  @Override
-  public boolean supports(Class<?> aClass) {
-    return UsernamePasswordAuthenticationToken.class.isAssignableFrom(aClass);
-  }
+        if(account == null) {
+            throw new BadCredentialsException("User not exists");
+        }
 
-  private Collection<? extends GrantedAuthority> getGrantedAuthorities(String username) {
-    Collection<? extends GrantedAuthority> authorities;
-    if ("admin".equals(username)) {
-      authorities = Arrays.asList(() -> "ROLE_ADMIN", () -> "ROLE_BASIC");
-    } else {
-      authorities = Arrays.asList(() -> "ROLE_BASIC");
+        if(name.equals(account.getPassword())) {
+            return new UsernamePasswordAuthenticationToken(name, account.getPassword(), new ArrayList<>());
+        }
+
+        throw new BadCredentialsException("Incorrect password");
     }
-    return authorities;
-  }
+
+    @Override
+    public boolean supports(Class<?> aClass) {
+        return UsernamePasswordAuthenticationToken.class.isAssignableFrom(aClass);
+    }
 }
