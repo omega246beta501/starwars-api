@@ -4,11 +4,13 @@ import com.starwars.model.Planet;
 import com.starwars.model.PlanetOnlyNameAndPopulation;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
+@Secured("ROLE_PLANETS")
 public interface PlanetRepository extends JpaRepository<Planet,Long> {
     Planet findByName(String name);
     List<Planet> findByNameContaining(String name);

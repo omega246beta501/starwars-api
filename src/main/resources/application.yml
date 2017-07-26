@@ -4,5 +4,9 @@ spring:
       ddl-auto: create
 security:
   user:
-    name: admin
-    password: adminPass
+    name: ruben
+    password: ruben
+    role: ROLE_PLANETS
+
+
+
