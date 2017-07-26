@@ -2,11 +2,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create
-security:
-  user:
-    name: ruben
-    password: ruben
-    role: ROLE_PLANETS
+
 
 
 
